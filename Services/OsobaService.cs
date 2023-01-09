@@ -37,5 +37,51 @@ namespace Dating_app.Services
                 return userProperties.ToDictionary(x => x.Key,x => x.Value);
             });
          }
+
+         public async Task<Dictionary<string,object>> LikeOsobu(string userId,string userId2)
+         {
+            await using var session = _driver.AsyncSession();
+            return await session.ExecuteWriteAsync(async tx =>{
+                //za sad null mora nadjem neku smislenu vrednost
+                var query = @"
+                MATCH (u:User {userId:$userId})
+                MATCH (k:User {userId:$userId2})
+                MERGE (u)-[r1:LIKED]->(k)
+                RETURN k as u
+                LIMIT 1";
+                 var cursor = await tx.RunAsync(query,new {userId,userId2});
+                if(! await cursor.FetchAsync())
+                {
+                    return null;
+                }
+                var record = cursor.Current;
+                var userProperties = record["u"].As<INode>().Properties;    
+                return userProperties.ToDictionary(x => x.Key,x => x.Value);
+            });
+         }
+
+         public async Task<Dictionary<string,object>> ProveriMatch(string userId,string userId2)
+         {
+            await using var session = _driver.AsyncSession();
+            return await session.ExecuteReadAsync(async tx =>{
+                //za sad null mora nadjem neku smislenu vrednost
+                var query = @"
+                MATCH (u:User {userId:$userId})
+                MATCH (k:User {userId:$userId2})
+                MATCH (k)-[r:LIKED]->(u)
+                RETURN r as r
+                LIMIT 1";
+                var cursor = await tx.RunAsync(query,new {userId,userId2});
+                if(!await cursor.FetchAsync())
+                {
+                    return null;
+                }
+                var record = cursor.Current;
+                var userProperties = record["r"].As<IRelationship>().Properties;
+                if(userProperties == null)
+                        return null;
+                return userProperties.ToDictionary(x => x.Key,x => x.Value);
+            });
+         }
     }
 }

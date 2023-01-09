@@ -10,6 +10,7 @@ namespace Dating_app.Controllers
     public class AccController : ControllerBase
     {
         string testId = "5faabeec-1b28-4dd8-8d17-7af578f09183";
+        string testId2 ="d957b3d8-f2ac-42e4-9225-5391a6b95b34";
         //Radi
         [HttpPost("interesovanje/{nazivInteresovanja}")]
         public async Task<IActionResult> DodajInteresovanje(string nazivInteresovanja)
@@ -42,7 +43,7 @@ namespace Dating_app.Controllers
 
             var driver = Neo4j.Driver;
             var mestoService = new MestoService(driver);
-            var mestoStanovanja =await  mestoService.AddAsync(testId,nazivMesta);
+            var mestoStanovanja =await  mestoService.AddAsync(userId,nazivMesta);
 
             return Ok(mestoService);
 
@@ -55,7 +56,7 @@ namespace Dating_app.Controllers
 
             var driver = Neo4j.Driver;
             var infoservice = new InfoService(driver);
-            var opis =await  infoservice.PromeniOpis(testId,noviOpis);
+            var opis =await  infoservice.PromeniOpis(userId,noviOpis);
 
             return Ok(opis);
 
@@ -67,8 +68,30 @@ namespace Dating_app.Controllers
             var userId = HttpReqUtils.GetUserId(Request);
             var driver = Neo4j.Driver;
             var osobaService = new OsobaService(driver);
-            var osoba = await osobaService.SledecaOsoba(testId);
+            var osoba = await osobaService.SledecaOsoba(userId);
+            return Ok(osoba);
+        }
+        [HttpGet("osoba/likeOsobu/{id1}/{id2}")]
+        public async Task<IActionResult> LikeOsobu(string id1)
+        {
+            var userId = HttpReqUtils.GetUserId(Request);
+            var driver = Neo4j.Driver;
+            var osobaService = new OsobaService(driver);
+            var osoba = await osobaService.LikeOsobu(userId,id1);
+            return Ok(osoba);
+        }
+
+        //Ako vrati status code 204 onda nije match, ako vrati bilo sta drugo match je
+        [HttpGet("osoba/proveriMatch/{id1}/{id2}")]
+        public async Task<IActionResult> ProveriMatch(string id1)
+        {
+            var userId = HttpReqUtils.GetUserId(Request);
+            var driver = Neo4j.Driver;
+            var osobaService = new OsobaService(driver);
+            var osoba = await osobaService.ProveriMatch(userId,id1);
+            if(osoba == null)
+                return Ok(null);
             return Ok(osoba);
         }
     }
-}
+} 
