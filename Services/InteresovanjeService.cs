@@ -55,6 +55,17 @@ namespace Dating_app.Services
                 return cursor.Current["interesovanje"].As<Dictionary<string,object>>();
             });
         }
+        public async Task<IEnumerable<string>> VratiSva()
+        {
+            await using var session = _driver.AsyncSession();
+            return await session.ExecuteReadAsync(async tx =>{
+                var query = "MATCH (i:Interesovanje) RETURN i.naziv AS naziv";
+                var cursor = await tx.RunAsync(query);
+                var records = await cursor.ToListAsync();
+                var lista = records.Select(x => x["naziv"].As<string>());
+                return lista;
+            });
+        }
 
     }
 }

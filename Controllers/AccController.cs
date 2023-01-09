@@ -34,7 +34,7 @@ namespace Dating_app.Controllers
 
             return Ok(interesovanje);
         }
-        //Radi samo je odg prazan
+        //Puca kad prvi put stavlja iz koda
         [HttpPut("mestoStanovanja/{nazivMesta}")]
         public async Task<IActionResult> PromeniMestoStanovanja(string nazivMesta)
         {
@@ -67,7 +67,7 @@ namespace Dating_app.Controllers
             var userId = HttpReqUtils.GetUserId(Request);
             var driver = Neo4j.Driver;
             var osobaService = new OsobaService(driver);
-            var osoba = await osobaService.SledecaOsoba(userId);
+            var osoba = await osobaService.SledecaOsoba(testId);
             return Ok(osoba);
         }
     }

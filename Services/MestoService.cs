@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Neo4j.Driver;
 
@@ -12,7 +13,7 @@ namespace Dating_app.Services
         {
             _driver = driver;
         }
-
+        //Treba se doda za if
         public async Task<Dictionary<string,object>> AddAsync(string userId, string nazivMesta)
         {
             await using var session = _driver.AsyncSession();
@@ -33,6 +34,17 @@ namespace Dating_app.Services
                     throw new System.Exception($"Ne moze da se promeni mesto stanovanja");
                 }
                 return cursor.Current["mesto"].As<Dictionary<string,object>>();
+            });
+        }
+        public async Task<IEnumerable<string>> VratiSva()
+        {
+            await using var session = _driver.AsyncSession();
+            return await session.ExecuteReadAsync(async tx =>{
+                var query = "MATCH (m:Mesto) RETURN m.naziv AS naziv";
+                var cursor = await tx.RunAsync(query);
+                var records = await cursor.ToListAsync();
+                var lista = records.Select(x => x["naziv"].As<string>());
+                return lista;
             });
         }
         }
