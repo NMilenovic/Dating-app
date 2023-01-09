@@ -9,15 +9,6 @@ namespace Dating_app.Controllers
     [ApiController]
     public class InteresovanjaController : ControllerBase
     {
-        [HttpGet]
-        public async Task<IActionResult> VratiSve()
-        {
-            var driver = Neo4j.Driver;
-            var movieService = new InteresovanjeService(driver);
-
-            var movies = await movieService.VratiSve();
-
-            return Ok(movies);
-        }
+       
     }
 }

@@ -14,19 +14,17 @@ namespace Dating_app.Services
             _driver = driver;
         }
 
-        public async Task<Dictionary<string,object>> AddAsync(string userId, string id)
+        public async Task<Dictionary<string,object>> AddAsync(string userId, string nazivInteresovanja)
         {
             await using var session = _driver.AsyncSession();
 
             return await session.ExecuteWriteAsync(async tx =>{
                 var query = @"
-                MATCH (u:User {userId:$userId})
-                MATCH (i:Interesovanje {id: $id})
-                
-                MERGE (u) - [r:IMA_INTERESOVANJE] -> (i)
-                
+                MATCH (u:User {userId:$userId}),
+                    (i:Interesovanje {naziv:$nazivInteresovanja})
+                MERGE (u)-[r:IMA_INTERESOVANJE]->(i)
                 RETURN i {.*} as interesovanje";
-                var cursor = await tx.RunAsync(query,new {userId,id});
+                var cursor = await tx.RunAsync(query,new {userId,nazivInteresovanja});
 
                 if(!await cursor.FetchAsync())
                 {
@@ -36,18 +34,18 @@ namespace Dating_app.Services
             });
         }
 
-        public async Task<Dictionary<string,object>> RemoveAsync(string userId, string id)
+        public async Task<Dictionary<string,object>> RemoveAsync(string userId, string nazivInteresovanja)
         {
             await using var session = _driver.AsyncSession();
 
             return await session.ExecuteWriteAsync(async tx =>{
                 var query = @"
-                MATCH(u:User {userId:$userId})-[r:IMA_INTRESEOVANJE]->(i:Interesovanje {id:$id}
+                MATCH(u:User {userId:$userId})-[r:IMA_INTERESOVANJE]->(i:Interesovanje {naziv:$nazivInteresovanja})
                 DELETE r
                 RETURN i{
                     .*} as interesovanje";
 
-                var cursor = await tx.RunAsync(query,new {userId,id});
+                var cursor = await tx.RunAsync(query,new {userId,nazivInteresovanja});
 
                 if(!await cursor.FetchAsync())
                 {
@@ -57,21 +55,6 @@ namespace Dating_app.Services
                 return cursor.Current["interesovanje"].As<Dictionary<string,object>>();
             });
         }
-
-        //Ne radi
-        public async Task<Dictionary<string,object>[]> VratiSve()
-        {
-             await using var session = _driver.AsyncSession();
-             return await session.ExecuteReadAsync(async tx =>{
-                var cursor =await  tx.RunAsync("MATCH (i:Interesovanje) RETURN {ID(i),i.naziv} as int");
-                var recorods = await cursor.ToListAsync();
-                var interesovanja = recorods
-                                    .Select(x => x["int"].As<Dictionary<string,object>>())
-                                    .ToArray();
-                return interesovanja;
-             });
-        }
-
 
     }
 }

@@ -7,44 +7,47 @@ namespace Dating_app.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class AccController : ControllerBase
     {
-        [HttpPost("interesovanje/{id}")]
-        public async Task<IActionResult> DodajInteresovanje(string id)
+        string testId = "5faabeec-1b28-4dd8-8d17-7af578f09183";
+        //Radi
+        [HttpPost("interesovanje/{nazivInteresovanja}")]
+        public async Task<IActionResult> DodajInteresovanje(string nazivInteresovanja)
         {
             var userId = HttpReqUtils.GetUserId(Request);
 
             var driver = Neo4j.Driver;
             var intService = new InteresovanjeService(driver);
-            var interesovanje =await  intService.AddAsync(userId,id);
+            var interesovanje =await  intService.AddAsync(userId,nazivInteresovanja);
 
             return Ok(interesovanje);
 
         }
-        [HttpDelete("interesovanje/{id}")]
-        public async Task<IActionResult> ObrisiInteresovanje(string id)
+         //Radi
+        [HttpDelete("interesovanje/{nazivInteresovanja}")]
+        public async Task<IActionResult> ObrisiInteresovanje(string nazivInteresovanja)
         {
             var userId = HttpReqUtils.GetUserId(Request);
             var driver = Neo4j.Driver;
             var intService = new InteresovanjeService(driver);
-            var interesovanje = await intService.RemoveAsync(userId, id);
+            var interesovanje = await intService.RemoveAsync(userId, nazivInteresovanja);
 
             return Ok(interesovanje);
         }
-        [HttpPut("mestoStanovanja/{id}")]
-        public async Task<IActionResult> PromeniMestoStanovanja(string id)
+        //Radi samo je odg prazan
+        [HttpPut("mestoStanovanja/{nazivMesta}")]
+        public async Task<IActionResult> PromeniMestoStanovanja(string nazivMesta)
         {
             var userId = HttpReqUtils.GetUserId(Request);
 
             var driver = Neo4j.Driver;
             var mestoService = new MestoService(driver);
-            var mestoStanovanja =await  mestoService.AddAsync("1",id);
+            var mestoStanovanja =await  mestoService.AddAsync(testId,nazivMesta);
 
             return Ok(mestoService);
 
         }
-
+        //Radi
         [HttpPut("opis/{noviOpis}")]
         public async Task<IActionResult> PromeniOpis(string noviOpis)
         {
@@ -52,7 +55,7 @@ namespace Dating_app.Controllers
 
             var driver = Neo4j.Driver;
             var infoservice = new InfoService(driver);
-            var opis =await  infoservice.PromeniOpis(userId,noviOpis);
+            var opis =await  infoservice.PromeniOpis(testId,noviOpis);
 
             return Ok(opis);
 

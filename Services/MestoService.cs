@@ -13,20 +13,21 @@ namespace Dating_app.Services
             _driver = driver;
         }
 
-        public async Task<Dictionary<string,object>> AddAsync(string userId, string id)
+        public async Task<Dictionary<string,object>> AddAsync(string userId, string nazivMesta)
         {
             await using var session = _driver.AsyncSession();
 
             return await session.ExecuteWriteAsync(async tx =>{
                 var query = @"
-                MATCH (u:User {userId : $userId})
-                MATCH (m:Mesto {id: $id})
-                
+                MATCH (u:User {userId : $userId}),
+                    (m:Mesto {naziv:$nazivMesta})
+                MATCH (u) - [k:STANUJE_U] -> (n:Mesto)
+                DELETE k
                 MERGE (u) - [r:STANUJE_U] -> (m)
                 
                 RETURN m{
                     .*} as mesto";
-                var cursor = await tx.RunAsync(query,new {userId,id});
+                var cursor = await tx.RunAsync(query,new {userId,nazivMesta});
                 if(!await cursor.FetchAsync())
                 {
                     throw new System.Exception($"Ne moze da se promeni mesto stanovanja");
