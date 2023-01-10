@@ -83,5 +83,27 @@ namespace Dating_app.Services
                 return userProperties.ToDictionary(x => x.Key,x => x.Value);
             });
          }
+
+          public async Task<Dictionary<string,object>> Dodaj(string userId,string userId2)
+         {
+            await using var session = _driver.AsyncSession();
+            return await session.ExecuteWriteAsync(async tx =>{
+                var query = @"
+                MATCH (u:User {userId:$userId})
+                MATCH (k:User {userId:$userId2})
+                MERGE (u)-[r:PRIJATELJI]-(k)
+                RETURN r as r";
+                var cursor = await tx.RunAsync(query,new {userId,userId2});
+                if(!await cursor.FetchAsync())
+                {
+                    return null;
+                }
+                var record = cursor.Current;
+                var userProperties = record["r"].As<IRelationship>().Properties;
+                if(userProperties == null)
+                        return null;
+                return userProperties.ToDictionary(x => x.Key,x => x.Value);
+            });
+         }
     }
 }

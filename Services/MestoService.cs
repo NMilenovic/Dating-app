@@ -22,7 +22,7 @@ namespace Dating_app.Services
                 var query = @"
                 MATCH (u:User {userId : $userId}),
                     (m:Mesto {naziv:$nazivMesta})
-                MATCH (u) - [k:STANUJE_U] -> (n:Mesto)
+                OPTIONAL MATCH (u) - [k:STANUJE_U] -> (n:Mesto)
                 DELETE k
                 MERGE (u) - [r:STANUJE_U] -> (m)
                 
