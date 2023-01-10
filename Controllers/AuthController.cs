@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Dating_app.Model;
 using Dating_app.Services;
 using Microsoft.AspNetCore.Mvc;
 namespace Dating_app.Controllers
@@ -10,11 +11,16 @@ namespace Dating_app.Controllers
          [HttpPost("register")]
         public async Task<IActionResult> RegisterAsync([FromBody] RegisterDto registerDto)
         {
+            if (registerDto.GodinaRodjenja <1950 || registerDto.GodinaRodjenja> System.DateTime.Now.Year-17)
+            {
+                return BadRequest("Nevalidna godina rodjenja.");
+            }
+            if(registerDto.Password.Length < 8)
+                return BadRequest("Lozinka mora biti 8 ili vise karaktera!");
             var driver = Neo4j.Driver;
             var authService = new AuthService(driver);
-
             var user = await authService.RegisterAsync(registerDto.Email, registerDto.Password, 
-                registerDto.Ime,registerDto.Prezime,registerDto.GodinaRodjenja,registerDto.Opis);
+                registerDto.Ime,registerDto.Prezime,registerDto.GodinaRodjenja,registerDto.Opis,registerDto.Pol);
 
             return Ok(user);
         }
@@ -28,24 +34,6 @@ namespace Dating_app.Controllers
             var user = await authService.LoginAsync(loginDto.Email,loginDto.Password);
 
             return Ok(user);
-        }
-         public class RegisterDto
-        {
-            public string Email { get; init; }
-            public string Password { get; init; }
-            public string Ime { get; init; }
-            public string Prezime {get; init;}
-            public int GodinaRodjenja { get; init; }
-            public string Opis {get;init;}
-
-            //Fali avatar
-            //Interesovanja
-        }
-
-        public class LoginDto
-        {
-            public string Email { get; init; }
-            public string Password { get; init; }
         }
     }
 }

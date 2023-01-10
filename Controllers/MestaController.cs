@@ -10,7 +10,6 @@ namespace Dating_app.Controllers
     [ApiController]
     public class MestaController : ControllerBase
     {
-        //Radi
        [HttpGet("VratiSvaMesta")]
        public async Task<IActionResult> VratiSvaMesta()
        {

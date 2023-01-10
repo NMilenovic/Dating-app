@@ -21,7 +21,7 @@ namespace Dating_app.Services
                 //query dobar
                 var query = @"
                 MATCH (u:User {userId :$userId})-[r:STANUJE_U]->(m:Mesto)
-                MATCH (k:User WHERE k.userId <> u.userId)-[r1:STANUJE_U] ->(m1:Mesto {naziv:m.naziv})
+                MATCH (k:User WHERE k.userId <> u.userId AND k.pol <> u.pol)-[r1:STANUJE_U] ->(m1:Mesto {naziv:m.naziv})
                 WHERE NOT (u) -[:VEC_VIDEO]->(k) 
                 MERGE (u) -[v:VEC_VIDEO]->(k)
                 RETURN k as k
@@ -91,7 +91,8 @@ namespace Dating_app.Services
                 var query = @"
                 MATCH (u:User {userId:$userId})
                 MATCH (k:User {userId:$userId2})
-                MERGE (u)-[r:PRIJATELJI]-(k)
+                MERGE (u)-[r:PRIJATELJI]->(k)
+                MERGE (k)-[i:PRIJATELJI]->(u)
                 RETURN r as r";
                 var cursor = await tx.RunAsync(query,new {userId,userId2});
                 if(!await cursor.FetchAsync())

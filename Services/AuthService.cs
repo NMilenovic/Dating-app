@@ -17,7 +17,7 @@ namespace Dating_app.Services
         //Dodato ogranicenje za unique email (u bazi)
         //Dodaj ogranicenje za godine
           public async Task<Dictionary<string, object>> RegisterAsync(string email, string plainPassword, string ime,
-          string prezime, int godRodjenja, string opis)
+          string prezime, int godRodjenja, string opis, string pol)
         {
             var rounds = Config.GetPasswordConfig();
             var encrypted = BCryptNet.HashPassword(plainPassword, rounds);
@@ -35,11 +35,12 @@ namespace Dating_app.Services
                 ime: $ime,
                 prezime: $prezime,
                 godRodjenja: $godRodjenja,
-                opis: $opis
+                opis: $opis,
+                pol:$pol
                 })
-                RETURN u {.userId,.email,.ime,.prezime,.godRodjenja,.opis} as u";
+                RETURN u {.userId,.email,.ime,.prezime,.godRodjenja,.opis,.pol} as u";
 
-                var cursor = await tx.RunAsync(query,new{email,encrypted,ime,prezime,godRodjenja,opis});
+                var cursor = await tx.RunAsync(query,new{email,encrypted,ime,prezime,godRodjenja,opis,pol});
                 //single async jer gornji query vraca samo jedan, tj novog usera
                 var record = await cursor.SingleAsync();
 

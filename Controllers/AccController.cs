@@ -9,9 +9,8 @@ namespace Dating_app.Controllers
     [ApiController]
     public class AccController : ControllerBase
     {
-        string testId = "5faabeec-1b28-4dd8-8d17-7af578f09183";
-        string testId2 ="d957b3d8-f2ac-42e4-9225-5391a6b95b34";
-        string testId3 = "0bad313f-e867-47f4-a3b1-d9cece4363fe";
+        string testId = "4f4aa873-dc8f-469f-bac1-a35885ac7ec6";
+        string testId2 ="a0ca45f0-da27-4d01-9a07-a8468adaea09";
         //Radi
         [HttpPost("interesovanje/{nazivInteresovanja}")]
         public async Task<IActionResult> DodajInteresovanje(string nazivInteresovanja)
@@ -25,7 +24,6 @@ namespace Dating_app.Controllers
             return Ok(interesovanje);
 
         }
-         //Radi
         [HttpDelete("interesovanje/{nazivInteresovanja}")]
         public async Task<IActionResult> ObrisiInteresovanje(string nazivInteresovanja)
         {
@@ -44,12 +42,11 @@ namespace Dating_app.Controllers
 
             var driver = Neo4j.Driver;
             var mestoService = new MestoService(driver);
-            var mestoStanovanja =await  mestoService.AddAsync(testId3,nazivMesta);
+            var mestoStanovanja =await  mestoService.AddAsync(userId,nazivMesta);
 
             return Ok(mestoService);
 
         }
-        //Radi
         [HttpPut("opis/{noviOpis}")]
         public async Task<IActionResult> PromeniOpis(string noviOpis)
         {
@@ -101,7 +98,7 @@ namespace Dating_app.Controllers
             var userId = HttpReqUtils.GetUserId(Request);
             var driver = Neo4j.Driver;
             var osobaService = new OsobaService(driver);
-            var osoba = await osobaService.Dodaj(testId,testId2);
+            var osoba = await osobaService.Dodaj(userId,id1);
             if(osoba == null)
                 return Ok(null);
             return Ok($"Korisnik sa {userId} i korisnik {id1} su sada prijatelji.");
